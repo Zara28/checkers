@@ -7,6 +7,10 @@
 #include "windowsx.h"
 #include "winuser.h"
 
+#include "stdio.h"
+#define WIN32_LEAN_AND_MEAN            
+#include <stdlib.h>
+#define _CRT_SECURE_NO_WARNINGS
 #define MAX_LOADSTRING 100
 int x, y;
 // Глобальные переменные:
@@ -151,13 +155,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         y = GET_Y_LPARAM(lParam);
         InvalidateRect(hWnd, NULL, TRUE);
         break;
-       
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_RETURN:
+            turn();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        }
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-            Rectangle(hdc, x, y, x+100, y+100);
+            DrawField(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
@@ -192,52 +202,3 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-/*#include <iostream>
-using namespace std;
-
- int a[3][3] = {{1, 2, 3}, {3, 2, 1}, {3, 3, 3}};
-
-int main() {
- int n =3;
- for(int i=0;i<n;i++)
-{
-	for(int j=0;j<n;j++)
-	{
-		
-    cout<<a[i][j]<<' ';
-	}
-	cout<<"\n";
-}
-cout<<"\n";
-int b[3][3];
-for (int i = 0; i < n; ++i)
-               for (int j = 0; j < n; ++j)
-               {
-                     b[i][j] = a[n - j - 1][n-i-1];
-               }
-for(int i=0;i<n;i++)
-{
-	for(int j=0;j<n;j++)
-	{
-		
-    cout<<b[i][j]<<' ';
-	}
-	cout<<"\n";
-}
-for (int i = 0; i < n; ++i)
-               for (int j = 0; j < n; ++j)
-               {
-                     a[i][j] = b[n - j - 1][i];
-               }
-for(int i=0;i<n;i++)
-{
-	for(int j=0;j<n;j++)
-	{
-		
-    cout<<a[i][j]<<' ';
-	}
-	cout<<"\n";
-}
- 
-	return 0;
-}*/
