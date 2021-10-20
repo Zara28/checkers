@@ -9,3 +9,5 @@
 #include "framework.h"
 void DrawField(HDC hdc);
 void turn();
+void ChooseElem(int x, int y);
+void MoveElem(int x, int y);

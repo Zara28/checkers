@@ -25,8 +25,10 @@ int field[8][8] = {
 	{0, 1, 0, 1, 0, 1, 0, 1},
 	{1, 0, 1, 0, 1, 0, 1, 0},
 };
+int numberPlayer = 0;
 bool turn_field = false;
-int steps = 0;
+int game_checker_i;
+int game_checker_j;
 int sizeX = 30;
 int sizeY = 30;
 void turn()
@@ -45,13 +47,89 @@ void turn()
 		}
 	turn_field = !turn_field;
 }
+
+void ChooseElem(int x, int y)
+{
+	int i = y / sizeY;
+	int j = x / sizeX;
+	game_checker_i = i;
+	game_checker_j = j;
+}
+void MoveElem(int x, int y)
+{
+	int i = y / sizeY;
+	int j = x / sizeX;
+	bool right = j > game_checker_j;
+	int bottom = i > game_checker_i;
+	if ((abs(i - game_checker_i) == 1 && abs(j - game_checker_j) == 1))
+	{
+		field[i][j] = field[game_checker_i][game_checker_j];
+		field[game_checker_i][game_checker_j] = 0;
+		game_checker_i = 1000;
+		game_checker_j = 1000;
+		numberPlayer = !numberPlayer;
+		//turn();
+	}
+	else if (abs(j - game_checker_j) == 2 && abs(i - game_checker_i) == 2)
+	{
+		if (right)
+		{
+			if (bottom)
+			{
+				if (field[i + 1][j + 1] != 0)
+				{
+					field[i][j] = field[game_checker_i][game_checker_j];
+					field[game_checker_i][game_checker_j] = 0;
+					field[i + 1][j + 1] = 0;
+				}
+			}
+			else
+			{
+				if (field[i - 1][j + 1] != 0)
+				{
+					field[i][j] = field[game_checker_i][game_checker_j];
+					field[game_checker_i][game_checker_j] = 0;
+					field[i - 1][j + 1] = 0;
+				}
+			}
+			
+		}
+		else
+		{
+			if (!bottom)
+			{
+				if (field[i - 1][j - 1] != 0)
+				{
+					field[i][j] = field[game_checker_i][game_checker_j];
+					field[game_checker_i][game_checker_j] = 0;
+					field[i - 1][j - 1] = 0;
+				}
+			}
+			else
+			{
+				if (field[i + 1][j - 1] != 0)
+				{
+					field[i][j] = field[game_checker_i][game_checker_j];
+					field[game_checker_i][game_checker_j] = 0;
+					field[game_checker_i - 1][game_checker_j + 1] = 0;
+				}
+			}
+		}
+		
+		game_checker_i = 1000;
+		game_checker_j = 1000;
+		numberPlayer = !numberPlayer;
+	}
+}
 void DrawField(HDC hdc) {
 
 	HBRUSH hBrushEmptyCellBlack; //создаём кисть для пустого поля
 	hBrushEmptyCellBlack = CreateSolidBrush(RGB(128, 64, 0)); // серый
 	HBRUSH hBrushEmptyCellWhite; //создаём кисть для пустого поля
 	hBrushEmptyCellWhite = CreateSolidBrush(RGB(255, 255, 128)); // серый
-	
+
+	int kol_white = 0;
+	int kol_black = 0;
 
 	int i, j;
 	i = 0;
@@ -118,7 +196,7 @@ void DrawField(HDC hdc) {
 				hBrusWhite = CreateSolidBrush(RGB(255, 255, 255)); // желтый
 				SelectObject(hdc, hBrusWhite);
 				Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom);
-
+				kol_white++;
 				DeleteObject(hBrusWhite);
 			}
 			else if (field[i][j] == 2) {
@@ -126,11 +204,10 @@ void DrawField(HDC hdc) {
 				hBrushBlack = CreateSolidBrush(RGB(0, 0, 0)); // желтый
 				SelectObject(hdc, hBrushBlack);
 				Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom);
-
+				kol_black++;
 				DeleteObject(hBrushBlack);
 			}
-			else {
-				// тут никогда не должны оказаться
+			else  {
 			}
 			j++;
 		}
@@ -146,13 +223,21 @@ void DrawField(HDC hdc) {
 	SelectObject(hdc, hFont);
 	SetTextColor(hdc, RGB(0, 128, 128));
 
-	TCHAR  string1[] = _T("сделано ходов:");
+	TCHAR  string1[] = _T("Всего белых:");
 	TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
-	char sSteps[5];
-	TCHAR  tsSteps[5];
-	sprintf_s(sSteps, "%d", steps);
-	OemToChar(sSteps, tsSteps);
-	TextOut(hdc, 220, sizeY * (8 + 1), (LPCWSTR)tsSteps, _tcslen(tsSteps));
+	char sKolWhite[5];
+	TCHAR  tsKolWhite[5];
+	sprintf_s(sKolWhite, "%d", kol_white);
+	OemToChar(sKolWhite, tsKolWhite);
+	TextOut(hdc, 220, sizeY * (8 + 1), (LPCWSTR)tsKolWhite, _tcslen(tsKolWhite));
+
+	TCHAR  string2[] = _T("Всего черных:");
+	TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
+	char sKolBlack[5];
+	TCHAR  tsKolBlack[5];
+	sprintf_s(sKolBlack, "%d", kol_black);
+	OemToChar(sKolBlack, tsKolBlack);
+	TextOut(hdc, 220, sizeY * (8 + 2), (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
 
 	
 	DeleteObject(hFont);

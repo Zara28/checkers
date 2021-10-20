@@ -150,19 +150,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_LBUTTONDOWN:
+        x = GET_X_LPARAM(lParam);
+        y = GET_Y_LPARAM(lParam);
+        ChooseElem(x, y);
+        InvalidateRect(hWnd, NULL, TRUE);
+        break;
     case WM_RBUTTONDOWN:
         x = GET_X_LPARAM(lParam);
         y = GET_Y_LPARAM(lParam);
+        MoveElem(x, y);
         InvalidateRect(hWnd, NULL, TRUE);
         break;
-    case WM_KEYDOWN:
-        switch (wParam)
-        {
-        case VK_RETURN:
-            turn();
-            InvalidateRect(hWnd, NULL, TRUE);
-            break;
-        }
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
