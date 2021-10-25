@@ -13,6 +13,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define MAX_LOADSTRING 100
 int x, y;
+int page = 0;
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -162,19 +163,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         MoveElem(x, y);
         InvalidateRect(hWnd, NULL, TRUE);
         break;
-    /*case WM_KEYDOWN:
-        {
+    case WM_KEYDOWN:
+    {
         switch (wParam)
         {
-            case 
-         }
-     }
-     break;*/
+        case 80:
+            page = 1;
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        case 73:
+            page = 2;
+            break;
+        }
+    }
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            DrawField(hdc);
+            switch (page)
+            {
+            case 0:
+            {
+                DrawMenu(hdc);
+                break;
+            }
+            case 1:
+            {
+                DrawField(hdc);
+                break;
+            }
+            }
+
             EndPaint(hWnd, &ps);
         }
         break;
