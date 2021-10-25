@@ -14,15 +14,14 @@
 
 #include "windowsx.h"
 #include "winuser.h"
-
 int field[8][8] = {
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{2, 0, 2, 0, 2, 0, 2, 0},
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0},
+	{1, 0, 1, 0, 1, 0, 1, 0},
+	{0, 1, 0, 1, 0, 1, 0, 1},
 	{1, 0, 1, 0, 1, 0, 1, 0},
 };
 int numberPlayer = 1;
@@ -49,13 +48,65 @@ void turn()
 	numberPlayer = 3 - numberPlayer;
 }
 
+
+void light(int i, int j)
+{
+	bool left_1 = j - 1 >= 0;
+	bool left_2 = j - 2 >= 0;
+	bool right_1 = j + 1 < 8;
+	bool right_2 = j + 2 < 8;
+
+	bool top_1 = i - 1 >= 0;
+	bool top_2 = i - 2 >= 0;
+	bool bottom_1 = i + 1 < 8;
+	bool bottom_2 = i + 2 < 8;
+	if (field[i - 1][j - 1] == 0 && (left_1 && top_1))
+	{
+		field[i - 1][j - 1] = -1;
+	}
+	else if (field[i - 1][j - 1] != 0 && field[i - 2][j - 2] == 0 && (left_2 && top_2))
+	{
+		field[i - 2][j - 2] = -1;
+	}
+	if (field[i - 1][j + 1] == 0 && (right_1 && top_1))
+	{
+		field[i - 1][j + 1] = -1;
+	}
+	else if (field[i - 1][j + 1] != 0 && field[i - 2][j + 2] == 0 && (right_2 && top_2))
+	{
+		field[i - 2][j + 2] = -1;
+	}
+	if (field[i + 1][j - 1] == 0 && (left_1 && bottom_1))
+	{
+		field[i + 1][j - 1] = -1;
+	}
+	else if (field[i + 1][j - 1] != 0 && field[i + 2][j - 2] == 0 &&  (left_2 && bottom_2))
+	{
+		field[i + 2][j - 2] = -1;
+	}
+	if (field[i + 1][j + 1] == 0 && (right_1 && bottom_1))
+	{
+		field[i + 1][j + 1] = -1;
+	}
+	else if (field[i + 1][j + 1] != 0 && (field[i + 2][j + 2] == 0) && (right_2 && bottom_2))
+	{
+		field[i + 2][j + 2] = -1;
+	}
+}
+	
+
 void ChooseElem(int x, int y)
 {
-		int i = y / sizeY;
-		int j = x / sizeX;
+	int i = y / sizeY;
+	int j = x / sizeX;
+
+	if (field[i][j] == numberPlayer)
+	{
 		game_checker_i = i;
 		game_checker_j = j;
-	
+
+		light(i, j);
+	}
 }
 void MoveElem(int x, int y)
 {
@@ -141,8 +192,31 @@ bool kol()
 	}
 	return (nw == 0 || nb == 0);
 }
-void DrawField(HDC hdc) {
 
+void DrawMenu(HDC hdc)
+{
+	HFONT hFont;
+	hFont = CreateFont(20,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 128, 128));
+
+	TCHAR  string1[] = _T("P - play:");
+	TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
+
+	TCHAR  string2[] = _T("I  - instruction");
+	TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
+
+	TCHAR  string3[] = _T("C - close");
+	TextOut(hdc, 10, sizeY * (8 + 3), (LPCWSTR)string3, _tcslen(string3));
+
+	DeleteObject(hFont);
+}
+void DrawField(HDC hdc) {
 	int kol_white = 0;
 	int kol_black = 0;
 	HBRUSH hBrushEmptyCellBlack; //создаём кисть для пустого поля
@@ -228,6 +302,13 @@ void DrawField(HDC hdc) {
 					kol_black++;
 					DeleteObject(hBrushBlack);
 				}
+				else if (field[i][j] == -1)
+				{
+					HBRUSH hBrushEmptyCel; //создаём кисть для пустого поля
+					hBrushEmptyCel = CreateSolidBrush(RGB(255, 216, 163));
+					FillRect(hdc, &rect, hBrushEmptyCel);
+					field[i][j] = 0;
+				}
 				else {
 				}
 				j++;
@@ -267,7 +348,7 @@ void DrawField(HDC hdc) {
 		TCHAR  tsNum[5];
 		sprintf_s(sNum, "%d", numberPlayer);
 		OemToChar(sNum, tsNum);
-		TextOut(hdc, 230, sizeY * (8 + 3), (LPCWSTR)tsNum, _tcslen(tsNum));
+		TextOut(hdc, 235, sizeY * (8 + 3), (LPCWSTR)tsNum, _tcslen(tsNum));
 
 		DeleteObject(hFont);
 	}

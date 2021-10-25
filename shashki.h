@@ -10,5 +10,7 @@
 void DrawField(HDC hdc);
 bool kol();
 void turn();
+void light(int i, int j);
 void ChooseElem(int x, int y);
 void MoveElem(int x, int y);
+void DrawMenu(HDC hdc);
