@@ -160,6 +160,8 @@
     <ResourceCompile Include="shashki.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="menu.bmp" />
+    <Image Include="rules.bmp" />
     <Image Include="shashki.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

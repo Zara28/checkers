@@ -14,6 +14,15 @@
 #define MAX_LOADSTRING 100
 int x, y;
 int page = 0;
+
+BOOL WINAPI MoveWindow(
+    _In_  HWND hWnd,
+    _In_  int X,
+    _In_  int Y,
+    _In_  int nWidth,
+    _In_  int nHeight,
+    _In_  BOOL bRepaint
+);
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -167,12 +176,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch (wParam)
         {
+        case 77:
+            page = 0;
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
         case 80:
             page = 1;
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         case 73:
             page = 2;
+            InvalidateRect(hWnd, NULL, TRUE);
             break;
         }
     }
@@ -180,11 +194,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            HBITMAP hBitmap;
+            HDC             hdcMem;
+            HGDIOBJ         oldBitmap;
+            MoveWindow(hWnd, 0, 0, 600, 600, NULL);
+
             switch (page)
             {
             case 0:
             {
-                DrawMenu(hdc);
+                hBitmap = (HBITMAP)LoadImage(hInst, L"menu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+                DrawMenu(hdc, hBitmap);
                 break;
             }
             case 1:
@@ -192,7 +212,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DrawField(hdc);
                 break;
             }
+            case 2:
+
+                hBitmap = (HBITMAP)LoadImage(hInst, L"rules.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+                DrawIncstruction(hdc, hBitmap);
+                break;
             }
+
 
             EndPaint(hWnd, &ps);
         }

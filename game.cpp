@@ -13,7 +13,10 @@
 #include <tchar.h>
 
 #include "windowsx.h"
+
+#include "windows.h"
 #include "winuser.h"
+
 int field[8][8] = {
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{2, 0, 2, 0, 2, 0, 2, 0},
@@ -28,8 +31,8 @@ int numberPlayer = 1;
 bool turn_field = false;
 int game_checker_i;
 int game_checker_j;
-int sizeX = 30;
-int sizeY = 30;
+int sizeX = 40;
+int sizeY = 40;
 void turn()
 {
 	int b[8][8];
@@ -193,8 +196,64 @@ bool kol()
 	return (nw == 0 || nb == 0);
 }
 
-void DrawMenu(HDC hdc)
+void DrawMenu(HDC hdc, HBITMAP hBitmap)
 {
+	HDC hdcMem;
+	HGDIOBJ oldBitmap;
+
+	BITMAP bitmap;
+	hdcMem = CreateCompatibleDC(hdc);
+	oldBitmap = SelectObject(hdcMem, hBitmap);
+
+	GetObject(hBitmap, sizeof(bitmap), &bitmap);
+	BitBlt(hdc, 10, 0, 340, 600, hdcMem, 0, 0, SRCCOPY);
+
+	SelectObject(hdcMem, oldBitmap);
+	DeleteDC(hdcMem);
+
+
+	HFONT hFont;
+	hFont = CreateFont(30,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(128, 0, 0));
+
+	TCHAR  string0[] = _T("Нажмите");
+	TextOut(hdc, 10, sizeY * (8), (LPCWSTR)string0, _tcslen(string0));
+
+	TCHAR  string1[] = _T("P - чтобы начать игру");
+	TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
+
+	TCHAR  string2[] = _T("I - чтобы открыть инструкцию");
+	TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
+
+	TCHAR  string3[] = _T("M - открыть меню в процессе игры");
+	TextOut(hdc, 10, sizeY * (8 + 3), (LPCWSTR)string3, _tcslen(string3));
+
+	DeleteObject(hFont);
+}
+
+void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
+{
+	HDC hdcMem;
+	HGDIOBJ oldBitmap;
+
+	BITMAP bitmap;
+
+	hdcMem = CreateCompatibleDC(hdc);
+	oldBitmap = SelectObject(hdcMem, hBitmap);
+
+	GetObject(hBitmap, sizeof(bitmap), &bitmap);
+	BitBlt(hdc, 10, 100, 600, 600, hdcMem, 0, 0, SRCCOPY);
+
+	SelectObject(hdcMem, oldBitmap);
+	DeleteDC(hdcMem);
+
+
 	HFONT hFont;
 	hFont = CreateFont(20,
 		0, 0, 0, 0, 0, 0, 0,
@@ -203,16 +262,19 @@ void DrawMenu(HDC hdc)
 		L"Courier New"
 	);
 	SelectObject(hdc, hFont);
-	SetTextColor(hdc, RGB(0, 128, 128));
+	SetTextColor(hdc, RGB(128, 0, 0));
 
-	TCHAR  string1[] = _T("P - play:");
-	TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
+	TCHAR  string0[] = _T("Чтобы выбрать шашку, нажмите на нее левой кнопкой мыши.");
+	TextOut(hdc, 0, 10, (LPCWSTR)string0, _tcslen(string0));
 
-	TCHAR  string2[] = _T("I  - instruction");
-	TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
+	TCHAR  string1[] = _T("Подсветка покажет вам, куда вы можете сходить ");
+	TextOut(hdc, 0, 30, (LPCWSTR)string1, _tcslen(string1));
 
-	TCHAR  string3[] = _T("C - close");
-	TextOut(hdc, 10, sizeY * (8 + 3), (LPCWSTR)string3, _tcslen(string3));
+	TCHAR  string2[] = _T("Переместите шашку нажав правой кнопкой мыши на нужное поле");
+	TextOut(hdc, 0, 50, (LPCWSTR)string2, _tcslen(string2));
+
+	TCHAR  string3[] = _T("Побеждает тот, кто первый съест все шашки соперника");
+	TextOut(hdc, 0, 70, (LPCWSTR)string3, _tcslen(string3));
 
 	DeleteObject(hFont);
 }

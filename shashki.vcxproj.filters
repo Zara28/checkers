@@ -48,5 +48,11 @@
     <Image Include="shashki.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="menu.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="rules.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
