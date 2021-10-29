@@ -16,7 +16,10 @@
 
 #include "windows.h"
 #include "winuser.h"
-
+//индексы
+// 0 - пустота
+// 1, 2 - шашки первого и второго игроков
+// -1 - подсветка возможного хода
 int field[8][8] = {
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{2, 0, 2, 0, 2, 0, 2, 0},
@@ -33,6 +36,7 @@ int game_checker_i;
 int game_checker_j;
 int sizeX = 40;
 int sizeY = 40;
+//поворот поля на 180 градусов
 void turn()
 {
 	int b[8][8];
@@ -51,7 +55,7 @@ void turn()
 	numberPlayer = 3 - numberPlayer;
 }
 
-
+//подсветка мест, куда может сходить шашка
 void light(int i, int j)
 {
 	bool left_1 = j - 1 >= 0;
@@ -97,7 +101,7 @@ void light(int i, int j)
 	}
 }
 	
-
+//выбор шашки, проверка, своей ли шашкой хочет сходить игрок
 void ChooseElem(int x, int y)
 {
 	int i = y / sizeY;
@@ -111,6 +115,7 @@ void ChooseElem(int x, int y)
 		light(i, j);
 	}
 }
+//перемещение шашки
 void MoveElem(int x, int y)
 {
 	int i = y / sizeY;
@@ -175,6 +180,7 @@ void MoveElem(int x, int y)
 	}
 		
 }
+//проверка на наличие шашек у игроков
 bool kol()
 {
 	int nw = 0;
@@ -195,7 +201,7 @@ bool kol()
 	}
 	return (nw == 0 || nb == 0);
 }
-
+//прорисовка меню
 void DrawMenu(HDC hdc, HBITMAP hBitmap)
 {
 	HDC hdcMem;
@@ -236,7 +242,7 @@ void DrawMenu(HDC hdc, HBITMAP hBitmap)
 
 	DeleteObject(hFont);
 }
-
+//прорисовка инструкциии
 void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 {
 	HDC hdcMem;
@@ -278,13 +284,14 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 
 	DeleteObject(hFont);
 }
+//прорисовка игрового поля
 void DrawField(HDC hdc) {
 	int kol_white = 0;
 	int kol_black = 0;
-	HBRUSH hBrushEmptyCellBlack; //создаём кисть для пустого поля
-	hBrushEmptyCellBlack = CreateSolidBrush(RGB(128, 64, 0)); // серый
-	HBRUSH hBrushEmptyCellWhite; //создаём кисть для пустого поля
-	hBrushEmptyCellWhite = CreateSolidBrush(RGB(255, 255, 128)); // серый
+	HBRUSH hBrushEmptyCellBlack;
+	hBrushEmptyCellBlack = CreateSolidBrush(RGB(128, 64, 0)); 
+	HBRUSH hBrushEmptyCellWhite; 
+	hBrushEmptyCellWhite = CreateSolidBrush(RGB(255, 255, 128)); 
 	bool stop = kol();
 	if (!stop)
 	{
@@ -350,7 +357,7 @@ void DrawField(HDC hdc) {
 				}
 				if (field[i][j] == 1) {
 					HBRUSH hBrusWhite;
-					hBrusWhite = CreateSolidBrush(RGB(255, 255, 255)); // желтый
+					hBrusWhite = CreateSolidBrush(RGB(255, 255, 255)); 
 					SelectObject(hdc, hBrusWhite);
 					Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom);
 					kol_white++;
@@ -358,7 +365,7 @@ void DrawField(HDC hdc) {
 				}
 				else if (field[i][j] == 2) {
 					HBRUSH hBrushBlack;
-					hBrushBlack = CreateSolidBrush(RGB(0, 0, 0)); // желтый
+					hBrushBlack = CreateSolidBrush(RGB(0, 0, 0));
 					SelectObject(hdc, hBrushBlack);
 					Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom);
 					kol_black++;
@@ -366,7 +373,7 @@ void DrawField(HDC hdc) {
 				}
 				else if (field[i][j] == -1)
 				{
-					HBRUSH hBrushEmptyCel; //создаём кисть для пустого поля
+					HBRUSH hBrushEmptyCel; 
 					hBrushEmptyCel = CreateSolidBrush(RGB(255, 216, 163));
 					FillRect(hdc, &rect, hBrushEmptyCel);
 					field[i][j] = 0;
