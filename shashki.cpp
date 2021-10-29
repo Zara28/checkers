@@ -14,7 +14,6 @@
 #define MAX_LOADSTRING 100
 int x, y;
 int page = 0;
-
 BOOL WINAPI MoveWindow(
     _In_  HWND hWnd,
     _In_  int X,
