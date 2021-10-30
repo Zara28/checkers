@@ -29,7 +29,7 @@ int field[8][8] = {
 	{0, 0, 0, 0, 0, 0, 0, 0},
 	{1, 0, 1, 0, 1, 0, 1, 0},
 	{0, 1, 0, 1, 0, 1, 0, 1},
-	{1, 0, 1, 0, 1, 0, 1, 0},
+	{1, 0, 1, 0, 1, 0, 1, 0}
 };
 int numberPlayer = 1;
 bool turn_field = false;
@@ -244,6 +244,35 @@ void DrawMenu(HDC hdc, HBITMAP hBitmap)
 	DeleteObject(hFont);
 }
 
+void RandomField()
+{
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+	setlocale(LC_ALL, "rus");
+	int n = rand() % 2;
+	FILE* fout;
+	fout = fopen("ex1.txt", "rt");
+	if (fout == NULL) {
+		return;
+	}
+	for (int i = 0; i < 128; i++)
+	{
+		if (i <= 8 * (i - 1) && i >= 8 * n)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				fscanf(fout, "%5d", &field[i % 8][j]);
+			}
+		}
+		else
+		{
+			int c;
+			fscanf(fout, "%5d", &c);
+		}
+	
+	}
+	fclose(fout);
+}
 void SaveField()
 {
 	SetConsoleOutputCP(CP_UTF8);

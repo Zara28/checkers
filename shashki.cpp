@@ -182,6 +182,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DownloadField();
             InvalidateRect(hWnd, NULL, TRUE);
             break;
+        case 82:
+            RandomField();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
         case 77:
             page = 0;
             InvalidateRect(hWnd, NULL, TRUE);
