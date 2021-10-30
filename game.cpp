@@ -16,6 +16,7 @@
 
 #include "windows.h"
 #include "winuser.h"
+#include <clocale>
 //индексы
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
@@ -242,6 +243,48 @@ void DrawMenu(HDC hdc, HBITMAP hBitmap)
 
 	DeleteObject(hFont);
 }
+
+void SaveField()
+{
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+	setlocale(LC_ALL, "rus");
+	FILE* fout;
+	fout = fopen("field.txt", "wt");
+	if (fout == NULL) {
+		return;
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			fprintf(fout, "%5d", field[i][j]);
+		}
+	}
+	fclose(fout);
+}
+
+void DownloadField()
+{
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+	setlocale(LC_ALL, "rus");
+	FILE* fin;
+	char k;
+	fin = fopen("field.txt", "rt");
+	if (fin == NULL) {
+		return;
+	}
+	//fscanf(fin, "%c", &k);
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			fscanf(fin, "%5d", &field[i][j]);
+		}
+	}
+	fclose(fin);
+}
 //прорисовка инструкциии
 void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 {
@@ -281,6 +324,12 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 
 	TCHAR  string3[] = _T("Побеждает тот, кто первый съест все шашки соперника");
 	TextOut(hdc, 0, 70, (LPCWSTR)string3, _tcslen(string3));
+
+	TCHAR  string4[] = _T("Для сохранения расположения шашек в процессе игры нажмите S");
+	TextOut(hdc, 0, 90, (LPCWSTR)string4, _tcslen(string4));
+
+	TCHAR  string5[] = _T("Для загрузки последнего сохранения в процессе игры нажите D");
+	TextOut(hdc, 0, 110, (LPCWSTR)string5, _tcslen(string5));
 
 	DeleteObject(hFont);
 }

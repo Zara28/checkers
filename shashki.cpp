@@ -175,6 +175,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch (wParam)
         {
+        case 83:
+            SaveField();
+            break;
+        case 68:
+            DownloadField();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
         case 77:
             page = 0;
             InvalidateRect(hWnd, NULL, TRUE);

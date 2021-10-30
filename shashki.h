@@ -16,3 +16,5 @@ void ChooseElem(int x, int y);
 void MoveElem(int x, int y); 
 void DrawMenu(HDC hdc, HBITMAP hBitmap);
 void DrawIncstruction(HDC hdc, HBITMAP hBitmap);
+void SaveField();
+void DownloadField();
