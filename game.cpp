@@ -17,6 +17,8 @@
 #include "windows.h"
 #include "winuser.h"
 #include <clocale>
+
+#include <string>
 //индексы
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
@@ -252,22 +254,23 @@ void RandomField()
 	int n = rand() % 2;
 	FILE* fout;
 	fout = fopen("ex1.txt", "rt");
+	switch (n)
+	{
+	case 0:
+		fout = fopen("ex1.txt", "rt");
+		break;
+	case 1:
+		fout = fopen("ex2.txt", "rt");
+		break;
+	}
 	if (fout == NULL) {
 		return;
 	}
-	for (int i = 0; i < 128; i++)
+	for (int i = 0; i < 8; i++)
 	{
-		if (i <= 8 * (i - 1) && i >= 8 * n)
+		for (int j = 0; j < 8; j++)
 		{
-			for (int j = 0; j < 8; j++)
-			{
-				fscanf(fout, "%5d", &field[i % 8][j]);
-			}
-		}
-		else
-		{
-			int c;
-			fscanf(fout, "%5d", &c);
+			fscanf(fout, "%5d", &field[i % 8][j]);
 		}
 	
 	}
