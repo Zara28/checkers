@@ -115,7 +115,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 600, 600, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -138,6 +138,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - отправить сообщение о выходе и вернуться
 //
 //
+
+void Menu(HWND hwnd)
+{
+    HMENU menu = CreateMenu();
+    AppendMenu(menu, MF_POPUP, 1, L"Горячие клавиши");
+    SetMenu(hwnd, menu);
+}
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -150,6 +157,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                break;
+            case 1:
+                CloseWindow(hWnd);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -207,8 +217,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HBITMAP hBitmap;
             HDC             hdcMem;
             HGDIOBJ         oldBitmap;
-            MoveWindow(hWnd, 0, 0, 600, 600, NULL);
-
+         //   MoveWindow(hWnd, 0, 0, 600, 600, NULL);
+            Menu(hWnd);
             switch (page)
             {
             case 0:
