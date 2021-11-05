@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "shashki.h"
+#include "resource1.h"
 
 #include "windowsx.h"
 #include "winuser.h"
@@ -96,7 +97,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_SHASHKI);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
+    wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
     return RegisterClassExW(&wcex);
 }
 
@@ -139,12 +140,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
-void Menu(HWND hwnd)
-{
-    HMENU menu = CreateMenu();
-    AppendMenu(menu, MF_POPUP, 1, L"Горячие клавиши");
-    SetMenu(hwnd, menu);
-}
+//void Menu(HWND hwnd)
+//{
+//    HMENU menu = CreateMenu();
+//    AppendMenu(menu, MF_POPUP, 1, L"Горячие клавиши");
+//    SetMenu(hwnd, menu);
+//}
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -155,11 +156,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Разобрать выбор в меню:
             switch (wmId)
             {
-            case IDM_ABOUT:
+            case ID_Save:
+                SaveField();
+                break;
+            case ID_Menu:
+                page = 0;
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            case ID_Download:
+                DownloadField();
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            case ID_Random:
+                RandomField();
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            case ID_Inctruction:
+                page = 2;
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            case ID_About:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
-            case 1:
-                CloseWindow(hWnd);
+            case ID_Again:
+                page = 1;
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            case IDM_ABOUT:
+                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -218,7 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC             hdcMem;
             HGDIOBJ         oldBitmap;
          //   MoveWindow(hWnd, 0, 0, 600, 600, NULL);
-            Menu(hWnd);
+           // Menu(hWnd);
             switch (page)
             {
             case 0:

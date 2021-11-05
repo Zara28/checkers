@@ -1,7 +1,6 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Включаемый файл, созданный в Microsoft Visual C++.
 // Используется shashki.rc
-
 #define IDS_APP_TITLE			103
 
 #define IDR_MAINFRAME			128
@@ -28,3 +27,5 @@
 #define _APS_NEXT_SYMED_VALUE		110
 #endif
 #endif
+
+

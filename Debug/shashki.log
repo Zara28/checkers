@@ -1,6 +1,1 @@
-﻿  shashki.cpp
-D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(23,2): warning C4273: MoveWindow: несовместимое связывание dll
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winuser.h(4721,1): message : см. предыдущее определение "MoveWindow"
-D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(218,29): warning C4101: hdcMem: неиспользованная локальная переменная
-D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(219,29): warning C4101: oldBitmap: неиспользованная локальная переменная
-  shashki.vcxproj -> D:\моя папка\институт\ОАиП\другое\shashki\Debug\shashki.exe
+﻿  shashki.vcxproj -> D:\моя папка\институт\ОАиП\другое\shashki\Debug\shashki.exe
