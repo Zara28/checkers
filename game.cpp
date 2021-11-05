@@ -346,6 +346,9 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 	TCHAR  string3[] = _T("Побеждает тот, кто первый съест все шашки соперника");
 	TextOut(hdc, 5, 70, (LPCWSTR)string3, _tcslen(string3));
 
+	TCHAR  string4[] = _T("В игре на время на ход игроку дается 10 секунд");
+	TextOut(hdc, 5, 90, (LPCWSTR)string4, _tcslen(string4));
+
 	DeleteObject(hFont);
 }
 //прорисовка игрового поля

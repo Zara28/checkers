@@ -69,6 +69,11 @@ BEGIN
         MENUITEM "Инструкция",                  ID_Inctruction
         MENUITEM "О программе",                 ID_About
     END
+    POPUP "Игра на время"
+    BEGIN
+        MENUITEM "Включить",                    ID_TimeOn
+        MENUITEM "Отключить",                   ID_TimeOff, GRAYED
+    END
 END
 
 #endif    // Русский (Россия) resources

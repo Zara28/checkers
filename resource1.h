@@ -23,13 +23,18 @@
 #define ID_Again                        40018
 #define ID_Play                         40019
 #define ID_40020                        40020
+#define ID_40021                        40021
+#define ID_40022                        40022
+#define ID_TimeOn                       40023
+#define ID_TimeOff                      40024
+#define ID_40025                        40025
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
-#define _APS_NEXT_COMMAND_VALUE         40021
+#define _APS_NEXT_COMMAND_VALUE         40026
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -16,6 +16,7 @@
 int x, y;
 int page = 0;
 bool field = false;
+bool game_timer = false;
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -146,9 +147,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
+            HMENU menu = GetMenu(hWnd);
             // Разобрать выбор в меню:
             switch (wmId)
             {
+            case ID_TimeOn:
+                EnableMenuItem(menu, ID_TimeOn, MF_GRAYED);
+                game_timer = true;
+                EnableMenuItem(menu, ID_TimeOff, MF_ENABLED);
+                break;
+            case ID_TimeOff:
+                EnableMenuItem(menu, ID_TimeOff, MF_GRAYED);
+                game_timer = false;
+                EnableMenuItem(menu, ID_TimeOn, MF_ENABLED);
+                break;
             case ID_Save:
                 SaveField();
                 break;
@@ -191,6 +203,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_CREATE:
+        SetTimer(hWnd, 1, 10000, 0);
+        break;
+
+    case WM_TIMER:
+        if (game_timer)
+        {
+            turn();
+        }
+        InvalidateRect(hWnd, NULL, TRUE);
+        break;
+
     case WM_LBUTTONDOWN:
         x = GET_X_LPARAM(lParam);
         y = GET_Y_LPARAM(lParam);
