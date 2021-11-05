@@ -8,7 +8,7 @@
 
 
 #include "framework.h"
-void DrawField(HDC hdc);
+void DrawField(HDC hdc, bool newfield);
 bool kol();
 void turn();
 void light(int i, int j);

@@ -52,13 +52,17 @@ END
 
 IDR_MENU1 MENU
 BEGIN
+    POPUP "Меню"
+    BEGIN
+        MENUITEM "Открыть меню",                ID_Menu
+        MENUITEM "Вернуться в последнюю открытую игру", ID_Play
+    END
     POPUP "Горячие клавиши"
     BEGIN
         MENUITEM "Начать заново A",             ID_Again
         MENUITEM "Сохранить игру S",            ID_Save
         MENUITEM "Загрузить последнее сохранение D", ID_Download
         MENUITEM "Загрузить случайное упражнение R", ID_Random
-        MENUITEM "Открыть меню, не закрывая игры M", ID_Menu
     END
     POPUP "Помощь"
     BEGIN

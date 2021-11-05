@@ -15,14 +15,7 @@
 #define MAX_LOADSTRING 100
 int x, y;
 int page = 0;
-BOOL WINAPI MoveWindow(
-    _In_  HWND hWnd,
-    _In_  int X,
-    _In_  int Y,
-    _In_  int nWidth,
-    _In_  int nHeight,
-    _In_  BOOL bRepaint
-);
+bool field = false;
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -116,7 +109,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, 600, 600, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 650, 490, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -175,11 +168,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 page = 2;
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
+            case ID_Play:
+                page = 1;
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
             case ID_About:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case ID_Again:
                 page = 1;
+                field = true;
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             case IDM_ABOUT:
@@ -209,6 +207,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch (wParam)
         {
+        case 65:
+            page = 1;
+            field = true;
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
         case 83:
             SaveField();
             break;
@@ -247,13 +250,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
             case 0:
             {
-                hBitmap = (HBITMAP)LoadImage(hInst, L"menu.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+                hBitmap = (HBITMAP)LoadImage(hInst, L"menu1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
                 DrawMenu(hdc, hBitmap);
                 break;
             }
             case 1:
             {
-                DrawField(hdc);
+                if (field)
+                {
+                    DrawField(hdc, field);
+                    field = false;
+                }
+                else {
+                    DrawField(hdc, false);
+                }
                 break;
             }
             case 2:

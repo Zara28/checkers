@@ -23,6 +23,17 @@
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
 // -1 - подсветка возможного хода
+int startfield[8][8] = {
+	{0, 2, 0, 2, 0, 2, 0, 2},
+	{2, 0, 2, 0, 2, 0, 2, 0},
+	{0, 2, 0, 2, 0, 2, 0, 2},
+	{0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0},
+	{1, 0, 1, 0, 1, 0, 1, 0},
+	{0, 1, 0, 1, 0, 1, 0, 1},
+	{1, 0, 1, 0, 1, 0, 1, 0}
+};
+
 int field[8][8] = {
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{2, 0, 2, 0, 2, 0, 2, 0},
@@ -204,6 +215,7 @@ bool kol()
 	}
 	return (nw == 0 || nb == 0);
 }
+
 //прорисовка меню
 void DrawMenu(HDC hdc, HBITMAP hBitmap)
 {
@@ -215,35 +227,12 @@ void DrawMenu(HDC hdc, HBITMAP hBitmap)
 	oldBitmap = SelectObject(hdcMem, hBitmap);
 
 	GetObject(hBitmap, sizeof(bitmap), &bitmap);
-	BitBlt(hdc, 10, 0, 340, 600, hdcMem, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, 650, 490, hdcMem, 0, 0, SRCCOPY);
 
 	SelectObject(hdcMem, oldBitmap);
 	DeleteDC(hdcMem);
 
 
-	HFONT hFont;
-	hFont = CreateFont(30,
-		0, 0, 0, 0, 0, 0, 0,
-		DEFAULT_CHARSET,
-		0, 0, 0, 0,
-		L"Courier New"
-	);
-	SelectObject(hdc, hFont);
-	SetTextColor(hdc, RGB(128, 0, 0));
-
-	TCHAR  string0[] = _T("Нажмите");
-	TextOut(hdc, 10, sizeY * (8), (LPCWSTR)string0, _tcslen(string0));
-
-	TCHAR  string1[] = _T("P - чтобы начать игру");
-	TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
-
-	TCHAR  string2[] = _T("I - чтобы открыть инструкцию");
-	TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
-
-	TCHAR  string3[] = _T("M - открыть меню в процессе игры");
-	TextOut(hdc, 10, sizeY * (8 + 3), (LPCWSTR)string3, _tcslen(string3));
-
-	DeleteObject(hFont);
 }
 
 void RandomField()
@@ -346,27 +335,32 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 	SetTextColor(hdc, RGB(128, 0, 0));
 
 	TCHAR  string0[] = _T("Чтобы выбрать шашку, нажмите на нее левой кнопкой мыши.");
-	TextOut(hdc, 0, 10, (LPCWSTR)string0, _tcslen(string0));
+	TextOut(hdc, 5, 10, (LPCWSTR)string0, _tcslen(string0));
 
 	TCHAR  string1[] = _T("Подсветка покажет вам, куда вы можете сходить ");
-	TextOut(hdc, 0, 30, (LPCWSTR)string1, _tcslen(string1));
+	TextOut(hdc, 5, 30, (LPCWSTR)string1, _tcslen(string1));
 
 	TCHAR  string2[] = _T("Переместите шашку нажав правой кнопкой мыши на нужное поле");
-	TextOut(hdc, 0, 50, (LPCWSTR)string2, _tcslen(string2));
+	TextOut(hdc, 5, 50, (LPCWSTR)string2, _tcslen(string2));
 
 	TCHAR  string3[] = _T("Побеждает тот, кто первый съест все шашки соперника");
-	TextOut(hdc, 0, 70, (LPCWSTR)string3, _tcslen(string3));
-
-	TCHAR  string4[] = _T("Для сохранения расположения шашек в процессе игры нажмите S");
-	TextOut(hdc, 0, 90, (LPCWSTR)string4, _tcslen(string4));
-
-	TCHAR  string5[] = _T("Для загрузки последнего сохранения в процессе игры нажите D");
-	TextOut(hdc, 0, 110, (LPCWSTR)string5, _tcslen(string5));
+	TextOut(hdc, 5, 70, (LPCWSTR)string3, _tcslen(string3));
 
 	DeleteObject(hFont);
 }
 //прорисовка игрового поля
-void DrawField(HDC hdc) {
+void DrawField(HDC hdc, bool newfield) {
+	if (newfield)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				field[i][j] = startfield[i][j];
+			}
+		}
+		
+	}
 	int kol_white = 0;
 	int kol_black = 0;
 	HBRUSH hBrushEmptyCellBlack;
@@ -477,28 +471,28 @@ void DrawField(HDC hdc) {
 		SetTextColor(hdc, RGB(0, 128, 128));
 
 		TCHAR  string1[] = _T("Всего белых:");
-		TextOut(hdc, 10, sizeY * (8 + 1), (LPCWSTR)string1, _tcslen(string1));
+		TextOut(hdc, sizeX*(8+1), 10, (LPCWSTR)string1, _tcslen(string1));
 		char sKolWhite[5];
 		TCHAR  tsKolWhite[5];
 		sprintf_s(sKolWhite, "%d", kol_white);
 		OemToChar(sKolWhite, tsKolWhite);
-		TextOut(hdc, 220, sizeY * (8 + 1), (LPCWSTR)tsKolWhite, _tcslen(tsKolWhite));
+		TextOut(hdc, sizeX*(8 + 5), 10, (LPCWSTR)tsKolWhite, _tcslen(tsKolWhite));
 
 		TCHAR  string2[] = _T("Всего черных:");
-		TextOut(hdc, 10, sizeY * (8 + 2), (LPCWSTR)string2, _tcslen(string2));
+		TextOut(hdc, sizeX* (8 + 1), 30, (LPCWSTR)string2, _tcslen(string2));
 		char sKolBlack[5];
 		TCHAR  tsKolBlack[5];
 		sprintf_s(sKolBlack, "%d", kol_black);
 		OemToChar(sKolBlack, tsKolBlack);
-		TextOut(hdc, 220, sizeY * (8 + 2), (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
+		TextOut(hdc, sizeX* (8 + 5), 30, (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
 
 		TCHAR  string3[] = _T("Ход игрока под номером ");
-		TextOut(hdc, 10, sizeY * (8 + 3), (LPCWSTR)string3, _tcslen(string3));
+		TextOut(hdc, sizeX* (8 + 1), 50, (LPCWSTR)string3, _tcslen(string3));
 		char sNum[5];
 		TCHAR  tsNum[5];
 		sprintf_s(sNum, "%d", numberPlayer);
 		OemToChar(sNum, tsNum);
-		TextOut(hdc, 235, sizeY * (8 + 3), (LPCWSTR)tsNum, _tcslen(tsNum));
+		TextOut(hdc, sizeX* (8 + 7), 50, (LPCWSTR)tsNum, _tcslen(tsNum));
 
 		DeleteObject(hFont);
 	}
