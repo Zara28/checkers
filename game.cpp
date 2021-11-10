@@ -23,6 +23,12 @@
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
 // -1 - подсветка возможного хода
+
+struct game {
+
+};
+	int game_checker_i;
+	int game_checker_j;
 int startfield[8][8] = {
 	{0, 2, 0, 2, 0, 2, 0, 2},
 	{2, 0, 2, 0, 2, 0, 2, 0},
@@ -46,10 +52,12 @@ int field[8][8] = {
 };
 int numberPlayer = 1;
 bool turn_field = false;
-int game_checker_i;
-int game_checker_j;
-int sizeX = 40;
-int sizeY = 40;
+
+struct kletka
+{
+	int sizeX = 40;
+	int sizeY = 40;
+};
 //поворот поля на 180 градусов
 void turn()
 {
@@ -118,8 +126,9 @@ void light(int i, int j)
 //выбор шашки, проверка, своей ли шашкой хочет сходить игрок
 void ChooseElem(int x, int y)
 {
-	int i = y / sizeY;
-	int j = x / sizeX;
+	struct kletka m;
+	int i = y / m.sizeY;
+	int j = x / m.sizeX;
 
 	if (field[i][j] == numberPlayer)
 	{
@@ -132,8 +141,9 @@ void ChooseElem(int x, int y)
 //перемещение шашки
 void MoveElem(int x, int y)
 {
-	int i = y / sizeY;
-	int j = x / sizeX;
+	struct kletka m;
+	int i = y / m.sizeY;
+	int j = x / m.sizeX;
 	if (i < 8 && j < 8)
 	{
 		if (abs(i - game_checker_i) == abs(j - game_checker_j) && abs(i - game_checker_i) == 1)
@@ -353,6 +363,7 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 }
 //прорисовка игрового поля
 void DrawField(HDC hdc, bool newfield) {
+	struct kletka m;
 	if (newfield)
 	{
 		for (int i = 0; i < 8; i++)
@@ -378,7 +389,7 @@ void DrawField(HDC hdc, bool newfield) {
 		while (i < 8) {
 			j = 0;
 			while (j < 8) {
-				RECT rect = { j * sizeX, i * sizeY,  (j + 1) * sizeX,(i + 1) * sizeY };
+				RECT rect = { j * m.sizeX, i * m.sizeY,  (j + 1) * m.sizeX,(i + 1) * m.sizeY };
 				if (turn_field == false)
 				{
 					if (i % 2 == 0) {
@@ -474,28 +485,28 @@ void DrawField(HDC hdc, bool newfield) {
 		SetTextColor(hdc, RGB(0, 128, 128));
 
 		TCHAR  string1[] = _T("Всего белых:");
-		TextOut(hdc, sizeX*(8+1), 10, (LPCWSTR)string1, _tcslen(string1));
+		TextOut(hdc, m.sizeX*(8+1), 10, (LPCWSTR)string1, _tcslen(string1));
 		char sKolWhite[5];
 		TCHAR  tsKolWhite[5];
 		sprintf_s(sKolWhite, "%d", kol_white);
 		OemToChar(sKolWhite, tsKolWhite);
-		TextOut(hdc, sizeX*(8 + 5), 10, (LPCWSTR)tsKolWhite, _tcslen(tsKolWhite));
+		TextOut(hdc, m.sizeX*(8 + 5), 10, (LPCWSTR)tsKolWhite, _tcslen(tsKolWhite));
 
 		TCHAR  string2[] = _T("Всего черных:");
-		TextOut(hdc, sizeX* (8 + 1), 30, (LPCWSTR)string2, _tcslen(string2));
+		TextOut(hdc, m.sizeX* (8 + 1), 30, (LPCWSTR)string2, _tcslen(string2));
 		char sKolBlack[5];
 		TCHAR  tsKolBlack[5];
 		sprintf_s(sKolBlack, "%d", kol_black);
 		OemToChar(sKolBlack, tsKolBlack);
-		TextOut(hdc, sizeX* (8 + 5), 30, (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
+		TextOut(hdc, m.sizeX* (8 + 5), 30, (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
 
 		TCHAR  string3[] = _T("Ход игрока под номером ");
-		TextOut(hdc, sizeX* (8 + 1), 50, (LPCWSTR)string3, _tcslen(string3));
+		TextOut(hdc, m.sizeX* (8 + 1), 50, (LPCWSTR)string3, _tcslen(string3));
 		char sNum[5];
 		TCHAR  tsNum[5];
 		sprintf_s(sNum, "%d", numberPlayer);
 		OemToChar(sNum, tsNum);
-		TextOut(hdc, sizeX* (8 + 7), 50, (LPCWSTR)tsNum, _tcslen(tsNum));
+		TextOut(hdc, m.sizeX* (8 + 7), 50, (LPCWSTR)tsNum, _tcslen(tsNum));
 
 		DeleteObject(hFont);
 	}
