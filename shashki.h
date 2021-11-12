@@ -8,7 +8,7 @@
 
 
 #include "framework.h"
-void DrawField(HDC hdc, bool newfield);
+void DrawField(HDC hdc, bool newfield, TCHAR name[]);
 bool kol();
 void turn();
 void light(int i, int j);
@@ -19,3 +19,7 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap);
 void SaveField();
 void DownloadField();
 void RandomField();
+void DrawRecords(HDC hdc);
+void InsertRecord(char name[]);
+int CompareRecords(int index1, int index2);
+void addRecord(char name[]);

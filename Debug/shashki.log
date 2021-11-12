@@ -1,3 +1,5 @@
-﻿  game.cpp
-D:\моя папка\институт\ОАиП\другое\shashki\game.cpp(306,7): warning C4101: k: неиспользованная локальная переменная
+﻿  shashki.cpp
+D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(164,18): warning C4101: name: неиспользованная локальная переменная
+D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(300,29): warning C4101: hdcMem: неиспользованная локальная переменная
+D:\моя папка\институт\ОАиП\другое\shashki\shashki.cpp(301,29): warning C4101: oldBitmap: неиспользованная локальная переменная
   shashki.vcxproj -> D:\моя папка\институт\ОАиП\другое\shashki\Debug\shashki.exe

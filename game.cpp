@@ -23,10 +23,30 @@
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
 // -1 - подсветка возможного хода
-
-struct game {
-
+// —труктура с информацией о рекорде
+struct Record {
+	char name[20];
+	int gold;
+	int steps;
+	unsigned int year;
+	unsigned int month;
+	unsigned int day;
+	unsigned int hour;
+	unsigned int minute;
+	unsigned int second;
 };
+
+// ћаксимальное количество рекордов в таблице
+#define MAX_NUM_RECORDS 10
+
+// “аблица рекордов
+struct Record records[MAX_NUM_RECORDS + 1];
+// текущее количество рекордов в таблице
+int numRecords = 0;
+int kol_hodov_1 = 0;
+int kol_hodov_2 = 0;
+int kol_b = 0;
+int kol_w = 0;
 	int game_checker_i;
 	int game_checker_j;
 int startfield[8][8] = {
@@ -58,6 +78,114 @@ struct kletka
 	int sizeX = 40;
 	int sizeY = 40;
 };
+
+void addRecord(char name[])
+{
+	//if (numRecords >= MAX_NUM_RECORDS) {
+	//numRecords = numRecords - 1;
+	//}
+
+	strcpy(records[numRecords].name, name);
+	records[numRecords].gold = kol_w;
+	records[numRecords].steps = kol_hodov_1;
+
+	SYSTEMTIME st;
+	// ѕолучаем текущее врем€
+	GetLocalTime(&st);
+
+	// и разбрасываем его по пол€м в таблицу рекордов
+	records[numRecords].year = st.wYear;
+	records[numRecords].month = st.wMonth;
+	records[numRecords].day = st.wDay;
+
+	records[numRecords].hour = st.wHour;
+	records[numRecords].minute = st.wMinute;
+	records[numRecords].second = st.wSecond;
+	// —ледующий раз будем записывать рекорд в следующий элемент	
+	numRecords++;
+}
+int CompareRecords(int index1, int index2)
+{
+	if (records[index1].gold < records[index2].gold)
+		return -1;
+	if (records[index1].gold > records[index2].gold)
+		return +1;
+
+	// if (records[index1].gold == records[index2].gold) {
+
+	if (records[index1].steps > records[index2].steps)
+		return -1;
+	if (records[index1].steps < records[index2].steps)
+		return +1;
+
+	//   if (records[index1].steps == records[index2].steps) {
+	return 0;
+	//    } 
+	//  }
+
+}
+void InsertRecord(char name[])
+{
+	strcpy(records[numRecords].name, name);
+	records[numRecords].gold = kol_w;
+	records[numRecords].steps = kol_hodov_1;
+
+	SYSTEMTIME st;
+	// ѕолучаем текущее врем€
+	GetLocalTime(&st);
+
+	// и разбрасываем его по пол€м в таблицу рекордов
+	records[numRecords].year = st.wYear;
+	records[numRecords].month = st.wMonth;
+	records[numRecords].day = st.wDay;
+
+	records[numRecords].hour = st.wHour;
+	records[numRecords].minute = st.wMinute;
+	records[numRecords].second = st.wSecond;
+	// ѕродвигаем запись к началу массива - если в ней 
+		// хороший результат
+	int i = numRecords;
+	while (i > 0) {
+		if (CompareRecords(i - 1, i) < 0) {
+			struct Record temp = records[i];
+			records[i] = records[i - 1];
+			records[i - 1] = temp;
+		}
+		i--;
+	}
+	// ≈сли таблица заполнена не полностью
+	if (numRecords < MAX_NUM_RECORDS)
+		// следующий раз новый рекорд будет занесен в новый элемент
+		numRecords++;
+}
+void DrawRecords(HDC hdc) {
+	HFONT hFont;
+	hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET, 0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 64, 64));
+
+	TCHAR  string1[] = _T("! No ! ƒата       ! ¬рем€    ! »м€                  ! «олото ! ’одов !");
+	TextOut(hdc, 10, 50, (LPCWSTR)string1, _tcslen(string1));
+
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		TCHAR  string2[80];
+		char str[80];
+		sprintf(str, "! %2d ! %02d.%02d.%04d ! %02d:%02d:%02d ! %-20s ! %4d   ! %5d !",
+			i + 1,
+			records[i].day, records[i].month, records[i].year,
+			records[i].hour, records[i].minute, records[i].second,
+			records[i].name, records[i].gold, records[i].steps
+		);
+		OemToChar(str, string2);
+		TextOut(hdc, 10, 24 * (i + 1) + 50, (LPCWSTR)string2, _tcslen(string2));
+	}
+	DeleteObject(hFont);
+}
+
 //поворот пол€ на 180 градусов
 void turn()
 {
@@ -201,6 +329,14 @@ void MoveElem(int x, int y)
 		}
 		Sleep(100);
 		turn();
+		if (numberPlayer == 1)
+		{
+			kol_hodov_1 += 1;
+		}
+		else
+		{
+			kol_hodov_2 += 1;
+		}
 	}
 		
 }
@@ -223,6 +359,8 @@ bool kol()
 			}
 		}
 	}
+	kol_b = nb;
+	kol_w = nw;
 	return (nw == 0 || nb == 0);
 }
 
@@ -362,7 +500,7 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 	DeleteObject(hFont);
 }
 //прорисовка игрового пол€
-void DrawField(HDC hdc, bool newfield) {
+void DrawField(HDC hdc, bool newfield, TCHAR name1[]) {
 	struct kletka m;
 	if (newfield)
 	{
@@ -504,7 +642,7 @@ void DrawField(HDC hdc, bool newfield) {
 		TextOut(hdc, m.sizeX* (8 + 1), 50, (LPCWSTR)string3, _tcslen(string3));
 		char sNum[5];
 		TCHAR  tsNum[5];
-		sprintf_s(sNum, "%d", numberPlayer);
+		sprintf_s(sNum, "%d %s", numberPlayer, name1);
 		OemToChar(sNum, tsNum);
 		TextOut(hdc, m.sizeX* (8 + 7), 50, (LPCWSTR)tsNum, _tcslen(tsNum));
 

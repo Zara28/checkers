@@ -17,6 +17,8 @@ int x, y;
 int page = 0;
 bool field = false;
 bool game_timer = false;
+TCHAR name1[20];
+TCHAR name2[20];
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -109,8 +111,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   HWND hWnd= CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, 650, 490, nullptr, nullptr, hInstance, nullptr);
+
 
    if (!hWnd)
    {
@@ -142,13 +145,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //}
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static HWND hButton;
+    static HWND hPlayer1;
     switch (message)
     {
     case WM_COMMAND:
         {
+        if (lParam == (LPARAM)hButton && page == 0)
+        {
+            GetWindowText(hPlayer1, name1, sizeof(name1));
+           // wcstombs(str, StrT, 20);
+            SetFocus(hWnd);
+            InvalidateRect(hWnd, NULL, TRUE);
+        }
             int wmId = LOWORD(wParam);
             HMENU menu = GetMenu(hWnd);
             // Разобрать выбор в меню:
+            char name [80];
             switch (wmId)
             {
             case ID_TimeOn:
@@ -203,7 +216,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    case WM_CREATE:
+    case WM_CREATE: 
+
+        hInst = ((LPCREATESTRUCT)lParam)->hInstance;
+        if (page == 0)
+        {
+
+            hPlayer1 = CreateWindowW(_T("edit"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 50, 160, 20, hWnd, 0, hInst, NULL);
+            ShowWindow(hPlayer1, SW_SHOWNORMAL);
+
+            hButton = CreateWindowW(_T("button"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 100, 160, 20, hWnd, 0, hInst, NULL);
+            ShowWindow(hButton, SW_SHOWNORMAL);
+        }
+        else
+        {
+            DestroyWindow(hButton);
+        }
         SetTimer(hWnd, 1, 10000, 0);
         break;
 
@@ -231,6 +259,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch (wParam)
         {
+        case VK_F1:
+            page = 4;
+            break;
         case 65:
             page = 1;
             field = true;
@@ -276,17 +307,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 hBitmap = (HBITMAP)LoadImage(hInst, L"menu1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
                 DrawMenu(hdc, hBitmap);
+
                 break;
             }
             case 1:
             {
+                DestroyWindow(hPlayer1);
+                DestroyWindow(hButton);
                 if (field)
                 {
-                    DrawField(hdc, field);
+                    DrawField(hdc, field, name1);
                     field = false;
                 }
                 else {
-                    DrawField(hdc, false);
+                    DrawField(hdc, false, name1);
                 }
                 break;
             }
@@ -294,6 +328,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 hBitmap = (HBITMAP)LoadImage(hInst, L"rules.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
                 DrawIncstruction(hdc, hBitmap);
+                break;
+            case 4:
+                DrawRecords(hdc);
                 break;
             }
 
