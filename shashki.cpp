@@ -147,6 +147,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND hButton;
     static HWND hPlayer1;
+    static HWND hPlayer2;
     switch (message)
     {
     case WM_COMMAND:
@@ -154,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (lParam == (LPARAM)hButton && page == 0)
         {
             GetWindowText(hPlayer1, name1, sizeof(name1));
+            GetWindowText(hPlayer2, name2, sizeof(name2));
            // wcstombs(str, StrT, 20);
             SetFocus(hWnd);
             InvalidateRect(hWnd, NULL, TRUE);
@@ -225,7 +227,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hPlayer1 = CreateWindowW(_T("edit"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 50, 160, 20, hWnd, 0, hInst, NULL);
             ShowWindow(hPlayer1, SW_SHOWNORMAL);
 
-            hButton = CreateWindowW(_T("button"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 100, 160, 20, hWnd, 0, hInst, NULL);
+            hPlayer2 = CreateWindowW(_T("edit"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 100, 160, 20, hWnd, 0, hInst, NULL);
+            ShowWindow(hPlayer1, SW_SHOWNORMAL);
+
+            hButton = CreateWindowW(_T("button"), _T("Запомнить"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 150, 160, 20, hWnd, 0, hInst, NULL);
             ShowWindow(hButton, SW_SHOWNORMAL);
         }
         else
@@ -313,14 +318,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case 1:
             {
                 DestroyWindow(hPlayer1);
+                DestroyWindow(hPlayer2);
                 DestroyWindow(hButton);
                 if (field)
                 {
-                    DrawField(hdc, field, name1);
+                    DrawField(hdc, field, name1, name2);
                     field = false;
                 }
                 else {
-                    DrawField(hdc, false, name1);
+                    DrawField(hdc, false, name1, name2);
                 }
                 break;
             }

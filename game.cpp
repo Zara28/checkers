@@ -35,7 +35,15 @@ struct Record {
 	unsigned int minute;
 	unsigned int second;
 };
-
+struct Player
+{
+	char name[20];
+	int kol_hodov_1 = 0;
+	int time;
+	int col_shah;
+};
+Player player1 = { "", 0, 0, 0};
+Player player2 = { "", 0, 0, 0};
 // ћаксимальное количество рекордов в таблице
 #define MAX_NUM_RECORDS 10
 
@@ -43,8 +51,6 @@ struct Record {
 struct Record records[MAX_NUM_RECORDS + 1];
 // текущее количество рекордов в таблице
 int numRecords = 0;
-int kol_hodov_1 = 0;
-int kol_hodov_2 = 0;
 int kol_b = 0;
 int kol_w = 0;
 	int game_checker_i;
@@ -79,15 +85,15 @@ struct kletka
 	int sizeY = 40;
 };
 
-void addRecord(char name[])
+void addRecord(Player player)
 {
 	//if (numRecords >= MAX_NUM_RECORDS) {
 	//numRecords = numRecords - 1;
 	//}
 
-	strcpy(records[numRecords].name, name);
-	records[numRecords].gold = kol_w;
-	records[numRecords].steps = kol_hodov_1;
+	strcpy(records[numRecords].name, player.name);
+	records[numRecords].gold = player.col_shah;
+	records[numRecords].steps = player.kol_hodov_1;
 
 	SYSTEMTIME st;
 	// ѕолучаем текущее врем€
@@ -124,11 +130,11 @@ int CompareRecords(int index1, int index2)
 	//  }
 
 }
-void InsertRecord(char name[])
+void InsertRecord(Player player)
 {
-	strcpy(records[numRecords].name, name);
-	records[numRecords].gold = kol_w;
-	records[numRecords].steps = kol_hodov_1;
+	strcpy(records[numRecords].name, player.name);
+	records[numRecords].gold = player.col_shah;
+	records[numRecords].steps = player.kol_hodov_1;
 
 	SYSTEMTIME st;
 	// ѕолучаем текущее врем€
@@ -331,11 +337,11 @@ void MoveElem(int x, int y)
 		turn();
 		if (numberPlayer == 1)
 		{
-			kol_hodov_1 += 1;
+			player1.kol_hodov_1 += 1;
 		}
 		else
 		{
-			kol_hodov_2 += 1;
+			player2.kol_hodov_1 += 1;
 		}
 	}
 		
@@ -500,8 +506,11 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 	DeleteObject(hFont);
 }
 //прорисовка игрового пол€
-void DrawField(HDC hdc, bool newfield, TCHAR name1[]) {
+void DrawField(HDC hdc, bool newfield, TCHAR name1[], TCHAR name2[]) {
 	struct kletka m;
+	
+	wcstombs(player1.name, name1, 20);
+	wcstombs(player2.name, name2, 20);
 	if (newfield)
 	{
 		for (int i = 0; i < 8; i++)
@@ -612,6 +621,8 @@ void DrawField(HDC hdc, bool newfield, TCHAR name1[]) {
 			i++;
 		}
 
+		player1.col_shah = kol_w;
+		player2.col_shah = kol_b;
 		HFONT hFont;
 		hFont = CreateFont(20,
 			0, 0, 0, 0, 0, 0, 0,
@@ -638,17 +649,27 @@ void DrawField(HDC hdc, bool newfield, TCHAR name1[]) {
 		OemToChar(sKolBlack, tsKolBlack);
 		TextOut(hdc, m.sizeX* (8 + 5), 30, (LPCWSTR)tsKolBlack, _tcslen(tsKolBlack));
 
-		TCHAR  string3[] = _T("’од игрока под номером ");
+		TCHAR  string3[] = _T("’од игрока ");
 		TextOut(hdc, m.sizeX* (8 + 1), 50, (LPCWSTR)string3, _tcslen(string3));
 		char sNum[5];
 		TCHAR  tsNum[5];
-		sprintf_s(sNum, "%d %s", numberPlayer, name1);
-		OemToChar(sNum, tsNum);
-		TextOut(hdc, m.sizeX* (8 + 7), 50, (LPCWSTR)tsNum, _tcslen(tsNum));
+		if (numberPlayer == 1)
+		{
+			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)player1.name, strlen(player1.name));
+		}
+		else
+		{
+			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)player2.name, strlen(player2.name));
+		}
+		
 
 		DeleteObject(hFont);
 	}
-	
+	else
+	{
+		addRecord(player1);
+		addRecord(player2);
+	}
 	
 	DeleteObject(hBrushEmptyCellBlack);
 
