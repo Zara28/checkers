@@ -74,6 +74,10 @@ BEGIN
         MENUITEM "Включить",                    ID_TimeOn
         MENUITEM "Отключить",                   ID_TimeOff, GRAYED
     END
+    POPUP "Турнирная таблица"
+    BEGIN
+        MENUITEM "Открыть таблицу F1",          ID_Table
+    END
 END
 
 #endif    // Русский (Россия) resources

@@ -19,6 +19,7 @@
 #include <clocale>
 
 #include <string>
+#include <time.h>
 //индексы
 // 0 - пустота
 // 1, 2 - шашки первого и второго игроков
@@ -85,11 +86,23 @@ struct kletka
 	int sizeY = 40;
 };
 
+int play_timer()
+{
+	if (player1.kol_hodov_1 < 10)
+	{
+		return 1;
+	}
+	else if(player2.kol_hodov_1 < 10)
+	{
+		return 2;
+	}
+	else
+	{
+		return 0;
+	}
+}
 void addRecord(Player player)
 {
-	//if (numRecords >= MAX_NUM_RECORDS) {
-	//numRecords = numRecords - 1;
-	//}
 
 	strcpy(records[numRecords].name, player.name);
 	records[numRecords].gold = player.col_shah;
@@ -112,9 +125,9 @@ void addRecord(Player player)
 }
 int CompareRecords(int index1, int index2)
 {
-	if (records[index1].gold < records[index2].gold)
-		return -1;
 	if (records[index1].gold > records[index2].gold)
+		return -1;
+	if (records[index1].gold < records[index2].gold)
 		return +1;
 
 	// if (records[index1].gold == records[index2].gold) {
@@ -164,6 +177,134 @@ void InsertRecord(Player player)
 		// следующий раз новый рекорд будет занесен в новый элемент
 		numRecords++;
 }
+#define MAX_LEN 80
+#define KEY +7
+
+// Шифрование одной буквы ch ключом KEY
+int encodeChar(int ch) {
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch + KEY;
+		if (newCh > 'Z')
+			newCh = 'A' + (newCh - 'Z' - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch + KEY;
+		if (newCh > 'z')
+			newCh = 'a' + (newCh - 'z' - 1);
+	}
+
+	return newCh;
+}
+
+int decodeChar(int ch) {
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch - KEY;
+		if (newCh < 'A')
+			newCh = 'Z' - ('A' - newCh - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch - KEY;
+		if (newCh < 'a')
+			newCh = 'z' - ('a' - newCh - 1);
+	}
+
+	return newCh;
+}
+
+void encodeString(char str[]) {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+		str[i] = encodeChar(str[i]);
+	}
+}
+
+// расшифровка
+void decodeString2(char* str) {
+
+	while (*str) {
+		*str = decodeChar(*str);
+		++str;
+	}
+}
+
+char filenameRecordsEncoded[] = "recordsEncoded.txt";
+
+void SaveRecordsEncoded() {
+	// Запись в выходной файл
+	FILE* fout = fopen(filenameRecordsEncoded, "wt");
+	if (fout == NULL) {
+		// выходим, не сохранив результаты в файл
+		return;
+	}
+
+	char str[MAX_LEN];
+	sprintf(str, "%d\n", numRecords);
+	encodeString(str);
+	fprintf(fout, "%s", str);
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		sprintf(str, "%s %d %d %d %d %d %d %d %d\n",
+			records[i].name,
+			records[i].gold,
+			records[i].steps,
+			records[i].year,
+			records[i].month,
+			records[i].day,
+			records[i].hour,
+			records[i].minute,
+			records[i].second
+		);
+		encodeString(str);
+		fprintf(fout, "%s", str);
+	}
+	// закрываем файл
+	fclose(fout);
+}
+
+void LoadRecordsEncoded() {
+	// Открываем файл с рекордами на чтение
+	FILE* fin = fopen(filenameRecordsEncoded, "rt");
+	if (fin == NULL) {
+		// выходим, не загрузив рекорды из файла
+		return;
+	}
+	char str[MAX_LEN];
+
+	fgets(str, MAX_LEN - 1, fin);
+	decodeString2(str);
+	sscanf(str, "%d", &numRecords);
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		fgets(str, MAX_LEN - 1, fin);
+		decodeString2(str);
+
+		sscanf(str, "%s%d%d%d%d%d%d%d%d\n",
+			records[i].name,
+			&records[i].gold,
+			&records[i].steps,
+			&records[i].year,
+			&records[i].month,
+			&records[i].day,
+			&records[i].hour,
+			&records[i].minute,
+			&records[i].second
+		);
+	}
+	// закрываем файл
+	fclose(fin);
+}
+
+
 void DrawRecords(HDC hdc) {
 	HFONT hFont;
 	hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0,
@@ -172,8 +313,8 @@ void DrawRecords(HDC hdc) {
 	);
 	SelectObject(hdc, hFont);
 	SetTextColor(hdc, RGB(0, 64, 64));
-
-	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Золото ! Ходов !");
+	LoadRecordsEncoded();
+	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Осталось шашек ! Ходов !");
 	TextOut(hdc, 10, 50, (LPCWSTR)string1, _tcslen(string1));
 
 	int i;
@@ -667,8 +808,36 @@ void DrawField(HDC hdc, bool newfield, TCHAR name1[], TCHAR name2[]) {
 	}
 	else
 	{
+	TCHAR  string[] = _T("");
+	if (player1.col_shah == 0)
+	{
+		TCHAR  string[] = _T("Игра завершена, победил первый игрок");
+
+	}
+	else if (player2.col_shah == 0)
+	{
+
+		TCHAR  string[] = _T("Игра завершена, победил второй игрок");
+	}
+	else if (player1.col_shah < player2.col_shah)
+	{
+
+		TCHAR  string[] = _T("Игра завершена, победил второй игрок");
+	}
+	else if (player1.col_shah > player2.col_shah)
+	{
+
+		TCHAR  string[] = _T("Игра завершена, победил первый игрок");
+	}
+	else if (player1.col_shah == player2.col_shah)
+	{
+
+		TCHAR string []= _T("Игра завершена, ничья");
+	}
+	TextOut(hdc, 5, 90, (LPCWSTR)string, _tcslen(string));
 		addRecord(player1);
 		addRecord(player2);
+		SaveRecordsEncoded();
 	}
 	
 	DeleteObject(hBrushEmptyCellBlack);

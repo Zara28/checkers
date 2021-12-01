@@ -213,6 +213,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+            case ID_Table:
+                page = 4;
+                InvalidateRect(hWnd, NULL, TRUE);
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
@@ -224,10 +227,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (page == 0)
         {
 
-            hPlayer1 = CreateWindowW(_T("edit"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 50, 160, 20, hWnd, 0, hInst, NULL);
+            hPlayer1 = CreateWindowW(_T("edit"), _T("Player1"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 50, 160, 20, hWnd, 0, hInst, NULL);
             ShowWindow(hPlayer1, SW_SHOWNORMAL);
 
-            hPlayer2 = CreateWindowW(_T("edit"), _T("Noname"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 100, 160, 20, hWnd, 0, hInst, NULL);
+            hPlayer2 = CreateWindowW(_T("edit"), _T("Player2"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 100, 100, 160, 20, hWnd, 0, hInst, NULL);
             ShowWindow(hPlayer1, SW_SHOWNORMAL);
 
             hButton = CreateWindowW(_T("button"), _T("Запомнить"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 150, 160, 20, hWnd, 0, hInst, NULL);
@@ -237,13 +240,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             DestroyWindow(hButton);
         }
-        SetTimer(hWnd, 1, 10000, 0);
+        SetTimer(hWnd, 1, 300000, 0);
         break;
 
     case WM_TIMER:
         if (game_timer)
         {
-            turn();
+            int i = play_timer();
+            if (i!=0)
+                field = false;
         }
         InvalidateRect(hWnd, NULL, TRUE);
         break;
@@ -304,8 +309,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HBITMAP hBitmap;
             HDC             hdcMem;
             HGDIOBJ         oldBitmap;
-         //   MoveWindow(hWnd, 0, 0, 600, 600, NULL);
-           // Menu(hWnd);
             switch (page)
             {
             case 0:
@@ -332,10 +335,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case 2:
 
+                DestroyWindow(hPlayer1);
+                DestroyWindow(hPlayer2);
+                DestroyWindow(hButton);
                 hBitmap = (HBITMAP)LoadImage(hInst, L"rules.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
                 DrawIncstruction(hdc, hBitmap);
                 break;
             case 4:
+                DestroyWindow(hPlayer1);
+                DestroyWindow(hPlayer2);
+                DestroyWindow(hButton);
                 DrawRecords(hdc);
                 break;
             }
