@@ -86,6 +86,129 @@ struct kletka
 	int sizeY = 40;
 };
 
+#define MAX_LEN 80
+#define KEY +7
+
+int encodeChar(int ch) {
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch + KEY;
+		if (newCh > 'Z')
+			newCh = 'A' + (newCh - 'Z' - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch + KEY;
+		if (newCh > 'z')
+			newCh = 'a' + (newCh - 'z' - 1);
+	}
+
+	return newCh;
+}
+
+int decodeChar(int ch) {
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch - KEY;
+		if (newCh < 'A')
+			newCh = 'Z' - ('A' - newCh - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch - KEY;
+		if (newCh < 'a')
+			newCh = 'z' - ('a' - newCh - 1);
+	}
+
+	return newCh;
+}
+
+void encodeString(char str[]) {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+		str[i] = encodeChar(str[i]);
+	}
+}
+
+void decodeString2(char* str) {
+
+	while (*str) {
+		*str = decodeChar(*str);
+		++str;
+	}
+}
+
+char filenameRecordsEncoded[] = "recordsEncoded.txt";
+
+void SaveRecordsEncoded() {
+	// Запись в выходной файл
+	FILE* fout = fopen(filenameRecordsEncoded, "wt");
+	if (fout == NULL) {
+		return;
+	}
+
+	char str[MAX_LEN];
+	sprintf(str, "%d\n", numRecords);
+	encodeString(str);
+	fprintf(fout, "%s", str);
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		sprintf(str, "%s %d %d %d %d %d %d %d %d\n",
+			records[i].name,
+			records[i].gold,
+			records[i].steps,
+			records[i].year,
+			records[i].month,
+			records[i].day,
+			records[i].hour,
+			records[i].minute,
+			records[i].second
+		);
+		encodeString(str);
+		fprintf(fout, "%s", str);
+	}
+	// закрываем файл
+	fclose(fout);
+}
+
+void LoadRecordsEncoded() {
+	// Открываем файл с рекордами на чтение
+	FILE* fin = fopen(filenameRecordsEncoded, "rt");
+	if (fin == NULL) {
+		// выходим, не загрузив рекорды из файла
+		return;
+	}
+	char str[MAX_LEN];
+
+	fgets(str, MAX_LEN - 1, fin);
+	decodeString2(str);
+	sscanf(str, "%d", &numRecords);
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		fgets(str, MAX_LEN - 1, fin);
+		decodeString2(str);
+
+		sscanf(str, "%s%d%d%d%d%d%d%d%d\n",
+			&records[i].name,
+			&records[i].gold,
+			&records[i].steps,
+			&records[i].year,
+			&records[i].month,
+			&records[i].day,
+			&records[i].hour,
+			&records[i].minute,
+			&records[i].second
+		);
+	}
+	// закрываем файл
+	fclose(fin);
+}
 int play_timer()
 {
 	if (player1.kol_hodov_1 < 10)
@@ -177,133 +300,6 @@ void InsertRecord(Player player)
 		// следующий раз новый рекорд будет занесен в новый элемент
 		numRecords++;
 }
-#define MAX_LEN 80
-#define KEY +7
-
-// Шифрование одной буквы ch ключом KEY
-int encodeChar(int ch) {
-
-	int newCh = ch;
-
-	if (ch >= 'A' && ch <= 'Z') {
-		newCh = ch + KEY;
-		if (newCh > 'Z')
-			newCh = 'A' + (newCh - 'Z' - 1);
-	}
-
-	if (ch >= 'a' && ch <= 'z') {
-		newCh = ch + KEY;
-		if (newCh > 'z')
-			newCh = 'a' + (newCh - 'z' - 1);
-	}
-
-	return newCh;
-}
-
-int decodeChar(int ch) {
-
-	int newCh = ch;
-
-	if (ch >= 'A' && ch <= 'Z') {
-		newCh = ch - KEY;
-		if (newCh < 'A')
-			newCh = 'Z' - ('A' - newCh - 1);
-	}
-
-	if (ch >= 'a' && ch <= 'z') {
-		newCh = ch - KEY;
-		if (newCh < 'a')
-			newCh = 'z' - ('a' - newCh - 1);
-	}
-
-	return newCh;
-}
-
-void encodeString(char str[]) {
-	int i;
-	for (i = 0; str[i] != '\0'; i++) {
-		str[i] = encodeChar(str[i]);
-	}
-}
-
-// расшифровка
-void decodeString2(char* str) {
-
-	while (*str) {
-		*str = decodeChar(*str);
-		++str;
-	}
-}
-
-char filenameRecordsEncoded[] = "recordsEncoded.txt";
-
-void SaveRecordsEncoded() {
-	// Запись в выходной файл
-	FILE* fout = fopen(filenameRecordsEncoded, "wt");
-	if (fout == NULL) {
-		// выходим, не сохранив результаты в файл
-		return;
-	}
-
-	char str[MAX_LEN];
-	sprintf(str, "%d\n", numRecords);
-	encodeString(str);
-	fprintf(fout, "%s", str);
-	int i;
-	for (i = 0; i < numRecords; i++) {
-		// сохраняем в файле каждое поле каждого рекорда
-		sprintf(str, "%s %d %d %d %d %d %d %d %d\n",
-			records[i].name,
-			records[i].gold,
-			records[i].steps,
-			records[i].year,
-			records[i].month,
-			records[i].day,
-			records[i].hour,
-			records[i].minute,
-			records[i].second
-		);
-		encodeString(str);
-		fprintf(fout, "%s", str);
-	}
-	// закрываем файл
-	fclose(fout);
-}
-
-void LoadRecordsEncoded() {
-	// Открываем файл с рекордами на чтение
-	FILE* fin = fopen(filenameRecordsEncoded, "rt");
-	if (fin == NULL) {
-		// выходим, не загрузив рекорды из файла
-		return;
-	}
-	char str[MAX_LEN];
-
-	fgets(str, MAX_LEN - 1, fin);
-	decodeString2(str);
-	sscanf(str, "%d", &numRecords);
-	int i;
-	for (i = 0; i < numRecords; i++) {
-		// сохраняем в файле каждое поле каждого рекорда
-		fgets(str, MAX_LEN - 1, fin);
-		decodeString2(str);
-
-		sscanf(str, "%s%d%d%d%d%d%d%d%d\n",
-			records[i].name,
-			&records[i].gold,
-			&records[i].steps,
-			&records[i].year,
-			&records[i].month,
-			&records[i].day,
-			&records[i].hour,
-			&records[i].minute,
-			&records[i].second
-		);
-	}
-	// закрываем файл
-	fclose(fin);
-}
-
 
 void DrawRecords(HDC hdc) {
 	HFONT hFont;
@@ -314,7 +310,7 @@ void DrawRecords(HDC hdc) {
 	SelectObject(hdc, hFont);
 	SetTextColor(hdc, RGB(0, 64, 64));
 	LoadRecordsEncoded();
-	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Осталось шашек ! Ходов !");
+	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Шашки ! Ходы !");
 	TextOut(hdc, 10, 50, (LPCWSTR)string1, _tcslen(string1));
 
 	int i;
@@ -485,7 +481,7 @@ void MoveElem(int x, int y)
 			player2.kol_hodov_1 += 1;
 		}
 	}
-		
+
 }
 //проверка на наличие шашек у игроков
 bool kol()
