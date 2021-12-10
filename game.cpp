@@ -644,10 +644,12 @@ void DrawIncstruction(HDC hdc, HBITMAP hBitmap)
 }
 //прорисовка игрового поля
 void DrawField(HDC hdc, bool newfield, TCHAR name1[], TCHAR name2[]) {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 	struct kletka m;
-	
-	wcstombs(player1.name, name1, 20);
+	wcstombs(player1.name, name1, sizeof(name1));
 	wcstombs(player2.name, name2, 20);
+	
 	if (newfield)
 	{
 		for (int i = 0; i < 8; i++)
@@ -792,11 +794,11 @@ void DrawField(HDC hdc, bool newfield, TCHAR name1[], TCHAR name2[]) {
 		TCHAR  tsNum[5];
 		if (numberPlayer == 1)
 		{
-			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)player1.name, strlen(player1.name));
+			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)name1, sizeof(name1)+2);
 		}
 		else
 		{
-			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)player2.name, strlen(player2.name));
+			TextOut(hdc, m.sizeX* (8 + 2), 50, (LPCWSTR)name2, sizeof(name2)+2);
 		}
 		
 

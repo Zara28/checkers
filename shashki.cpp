@@ -18,6 +18,7 @@ int page = 0;
 bool field = false;
 bool game_timer = false;
 bool draw = true;
+int lose;
 TCHAR name1[20];
 TCHAR name2[20];
 // Глобальные переменные:
@@ -248,8 +249,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (game_timer)
         {
             int i = play_timer();
-            if (i!=0)
+            if (i != 0)
+            {
+
                 page = -1;
+                lose = i;
+            }
         }
         InvalidateRect(hWnd, NULL, TRUE);
         break;
@@ -350,7 +355,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
 
             case -1:
-                TCHAR  string0[] = _T("Игра завершена из-за завершения времени на 10 ходов");
+
+                TCHAR  string0[] = _T("Первый игрок проиграл из-за завершения времени на 10 ходов");
+                if (lose == 2)
+                {
+                    TCHAR string0[] = _T("Второй игрок проиграл из-за завершения времени на 10 ходов");
+                }
                 TextOut(hdc, 5, 10, (LPCWSTR)string0, _tcslen(string0));
                 break;
             }
